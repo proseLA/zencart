@@ -56,9 +56,9 @@
 			$this->sql = "SELECT DISTINCT pd.products_id, p.products_sort_order, p.products_price, p.products_model
                 FROM " . TABLE_PRODUCTS . " p"
                 . $this->categories_join . "
-                INNER JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id) "
-				. $this->attributes_join .
-				" WHERE pd.language_id = " . (int)$_SESSION['languages_id'];
+                INNER JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id) 
+				" . $this->attributes_join . "
+				WHERE pd.language_id = " . (int)$_SESSION['languages_id'];
 		}
 
 

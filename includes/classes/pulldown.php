@@ -38,7 +38,7 @@
 		}
 
 		public function setOptionFilter(int $filter_id) {
-			$this->attributes_join = " LEFT JOIN " . TABLE_PRODUCTS_ATTRIBUTES . " pa USING (products_id)";
+			$this->includeAttributes();
 			$this->condition .= " AND pa.options_id =" . (int)$filter_id;
 			return $this;
 		}
@@ -49,7 +49,7 @@
 		}
 
 		public function includeAttributes() {
-			$this->attributes_join = " LEFT JOIN " . TABLE_PRODUCTS_ATTRIBUTES . " pa USING (products_id)";
+			$this->attributes_join = "RIGHT JOIN " . TABLE_PRODUCTS_ATTRIBUTES . " pa on (p.products_id = pa.products_id)";
 			return $this;
 		}
 

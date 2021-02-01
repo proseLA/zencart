@@ -173,16 +173,20 @@ function zen_parse_search_string($search_str = '', &$objects = array()) {
                     default:
                         $sql_add = " (";
                         $first_field = true;
+                        $sql_or = ' ';
                         foreach ($fields as $field_name) {
                             if (!$first_field) {
-                                $sql_add .= ' OR ';
+                                $sql_or = ' OR ';
                             }
                             $first_field = false;
                             if (strpos($field_name, '_id')) {
-                                $sql_add .= " :field_name = :numeric_keyword";
-
+	                            if ((int)$search_keywords[$i] != 0) {
+		                            $sql_add .= $sql_or;
+		                            $sql_add .= " :field_name = :numeric_keyword";
+	                            }
                             } else {
-                                $sql_add .= " :field_name LIKE '%:keyword%'";
+	                            $sql_add .= $sql_or;
+	                            $sql_add .= " :field_name LIKE '%:keyword%'";
                             }
                             $sql_add = $db->bindVars($sql_add, ':field_name', $field_name, 'noquotestring');
                         }
