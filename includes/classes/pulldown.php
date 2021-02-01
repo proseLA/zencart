@@ -21,11 +21,11 @@
 			$this->condition = ' ';
 
 			// default styling
-			$this->parameters = '';
-			//$this->parameters = 'required size="15" class="form-control" id="products_id"';
+			//$this->parameters = '';
+			$this->parameters = 'required size="15" class="form-control" id="products_id"';
 		}
 
-		public function setDefault($id)
+		public function setDefault(int $id)
 		{
 			$this->set_selected = $id;
 			return $this;
@@ -37,13 +37,13 @@
 			return $this;
 		}
 
-		public function setOptionFilter($filter_id) {
-			$this->includeAttributes();
-			$this->condition = " AND pa.options_id =" . (int)$filter_id;
+		public function setOptionFilter(int $filter_id) {
+			$this->attributes_join = " LEFT JOIN " . TABLE_PRODUCTS_ATTRIBUTES . " pa USING (products_id)";
+			$this->condition .= " AND pa.options_id =" . (int)$filter_id;
 			return $this;
 		}
 
-		public function exclude($array) {
+		public function exclude(array $array) {
 			$this->exclude = $array;
 			return $this;
 		}
@@ -53,7 +53,7 @@
 			return $this;
 		}
 
-		public function setSearchTerms($keywords) {
+		public function setSearchTerms(string $keywords) {
 			$this->keywords = $keywords;
 			return $this;
 		}
@@ -77,7 +77,7 @@
 			$this->results = $db->Execute($this->sql);
 		}
 
-		public function pull_down(string $name, $parameters = '')
+		public function generatePullDownHtml(string $name, $parameters = '', bool $required = false)
 		{
 			$this->processSQL();
 
@@ -85,6 +85,6 @@
 				$parameters = $this->parameters;
 			}
 
-			return zen_draw_pull_down_menu($name, $this->values, $this->set_selected, $parameters);
+			return zen_draw_pull_down_menu($name, $this->values, $this->set_selected, $parameters, $required);
 		}
 	}

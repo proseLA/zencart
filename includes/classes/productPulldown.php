@@ -10,8 +10,8 @@
 			parent::__construct();
 
 			$this->show_model = false;
-
 			$this->set_selected = 0;
+			$this->categories_join = '';
 
 			$this->sort = ' ORDER BY pd.products_name';
 
@@ -23,11 +23,19 @@
 			];
 		}
 
-		public function setSort($fieldname) {
+		public function setSort($fieldname)
+		{
 			if (in_array($fieldname, $this->allowed_sort_array)) {
 				$key = array_search($fieldname, $this->allowed_sort_array);
 				$this->sort = ' ORDER BY ' . $this->db_table_prefix_array[$key] . $fieldname;
 			}
+			return $this;
+		}
+
+		public function setCategory(int $category_id)
+		{
+			$this->categories_join = " LEFT JOIN " . TABLE_PRODUCTS_TO_CATEGORIES . " ptc ON (ptc.products_id = p.products_id)";
+			$this->condition .= " AND ptc.categories_id = " . (int)$category_id;
 			return $this;
 		}
 
@@ -37,12 +45,18 @@
 			return $this;
 		}
 
+		public function onlyActive()
+		{
+			$this->condition .= " AND p.products_status = 1";
+			return $this;
+		}
+
 		function setSQL()
 		{
-			$this->sql = "SELECT DISTINCT pd.products_id, p.products_sort_order, p.products_price, p.products_model, ptc.categories_id
-                FROM " . TABLE_PRODUCTS . " p
-                LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd USING (products_id)
-                LEFT JOIN " . TABLE_PRODUCTS_TO_CATEGORIES . " ptc USING (products_id) "
+			$this->sql = "SELECT DISTINCT pd.products_id, p.products_sort_order, p.products_price, p.products_model
+                FROM " . TABLE_PRODUCTS . " p"
+                . $this->categories_join . "
+                INNER JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id) "
 				. $this->attributes_join .
 				" WHERE pd.language_id = " . (int)$_SESSION['languages_id'];
 		}

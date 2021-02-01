@@ -21,13 +21,13 @@
 
 		}
 
-		public function show_parent()
+		public function showParent()
 		{
 			$this->show_parent = true;
 			return $this;
 		}
 
-		public function show_full_path()
+		public function showFullPath()
 		{
 			$this->show_full_path = true;
 			return $this;
@@ -42,7 +42,6 @@
 				. $this->attributes_join . ' WHERE TRUE ';
 		}
 
-
 		function processSQL()
 		{
 			$this->setSQL();
@@ -54,12 +53,12 @@
 				}
 				$this->values[] = [
 					'id' => $result['categories_id'],
-					'text' => $this->category_text($result),
+					'text' => $this->categoryText($result),
 				];
 			}
 		}
 
-		private function category_text($category)
+		private function categoryText($category)
 		{
 			if (!empty($this->attributes_join)) {
 				$text = $category['categories_name'];
@@ -77,5 +76,4 @@
 			}
 			return $category['categories_name'] . $parent . ($this->show_id ? ' - ID# ' . $category['categories_id'] : '');
 		}
-
 	}
