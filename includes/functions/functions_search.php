@@ -178,13 +178,14 @@ function zen_parse_search_string($search_str = '', &$objects = array()) {
                             if (!$first_field) {
                                 $sql_or = ' OR ';
                             }
-                            $first_field = false;
                             if (strpos($field_name, '_id')) {
 	                            if ((int)$search_keywords[$i] != 0) {
+		                            $first_field = false;
 		                            $sql_add .= $sql_or;
 		                            $sql_add .= " :field_name = :numeric_keyword";
 	                            }
                             } else {
+	                            $first_field = false;
 	                            $sql_add .= $sql_or;
 	                            $sql_add .= " :field_name LIKE '%:keyword%'";
                             }
