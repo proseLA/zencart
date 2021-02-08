@@ -157,50 +157,51 @@ function zen_parse_search_string($search_str = '', &$objects = array()) {
     return false;
 }
 
-    function zen_build_keyword_where_clause($fields, $string)
-    {
-        global $db;
-        if (zen_parse_search_string(stripslashes($string), $search_keywords)) {
-            $where_str = " AND (";
-            for ($i = 0, $n = sizeof($search_keywords); $i < $n; $i++) {
-                switch ($search_keywords[$i]) {
-                    case '(':
-                    case ')':
-                    case 'and':
-                    case 'or':
-                        $where_str .= " " . strtoupper($search_keywords[$i]) . " ";
-                        break;
-                    default:
-                        $sql_add = " (";
-                        $first_field = true;
-                        $sql_or = ' ';
-                        foreach ($fields as $field_name) {
-                            if (!$first_field) {
-                                $sql_or = ' OR ';
-                            }
-                            if (strpos($field_name, '_id')) {
-	                            if ((int)$search_keywords[$i] != 0) {
-		                            $first_field = false;
-		                            $sql_add .= $sql_or;
-		                            $sql_add .= " :field_name = :numeric_keyword";
-	                            }
-                            } else {
-	                            $first_field = false;
-	                            $sql_add .= $sql_or;
-	                            $sql_add .= " :field_name LIKE '%:keyword%'";
-                            }
-                            $sql_add = $db->bindVars($sql_add, ':field_name', $field_name, 'noquotestring');
-                        }
-                        $sql_add .= ") ";
+	function zen_build_keyword_where_clause($fields, $string)
+	{
+		global $db;
+		if (!zen_parse_search_string(stripslashes($string), $search_keywords)) {
+			return;
+		}
+		$where_str = " AND (";
+		for ($i = 0, $n = sizeof($search_keywords); $i < $n; $i++) {
+			switch ($search_keywords[$i]) {
+				case '(':
+				case ')':
+				case 'and':
+				case 'or':
+					$where_str .= " " . strtoupper($search_keywords[$i]) . " ";
+					break;
+				default:
+					$sql_add = " (";
+					$first_field = true;
+					$sql_or = ' ';
+					foreach ($fields as $field_name) {
+						if (!$first_field) {
+							$sql_or = ' OR ';
+						}
+						if (strpos($field_name, '_id')) {
+							if ((int)$search_keywords[$i] != 0) {
+								$first_field = false;
+								$sql_add .= $sql_or;
+								$sql_add .= " :field_name = :numeric_keyword";
+							}
+						} else {
+							$first_field = false;
+							$sql_add .= $sql_or;
+							$sql_add .= " :field_name LIKE '%:keyword%'";
+						}
+						$sql_add = $db->bindVars($sql_add, ':field_name', $field_name, 'noquotestring');
+					}
+					$sql_add .= ") ";
 
-                        $where_str .= $sql_add;
+					$where_str .= $sql_add;
 
-                        $where_str = $db->bindVars($where_str, ':keyword', $search_keywords[$i], 'noquotestring');
-                        $where_str = $db->bindVars($where_str, ':numeric_keyword', $search_keywords[$i], 'integer');
-                        break;
-                }
-            }
-            $where_str .= " )";
-        }
-        return $where_str;
-    }
+					$where_str = $db->bindVars($where_str, ':keyword', $search_keywords[$i], 'noquotestring');
+					$where_str = $db->bindVars($where_str, ':numeric_keyword', $search_keywords[$i], 'integer');
+					break;
+			}
+		}
+		$where_str .= " )";
+		return $where_str;
+	}
