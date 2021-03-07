@@ -30,15 +30,24 @@ function update_zone(theForm) {
   // build dynamic list of countries/zones for pulldown
 <?php echo zen_js_zone_list('SelectedCountry', 'theForm', 'zone_id'); ?>
 
-  // if we had a value before reset, set it again
-  if (SelectedZone != "") theForm.elements["zone_id"].value = SelectedZone;
-
+    // set selected option for zone
+    theForm.elements["zone_id"].value = ""; // set as default "Select..."
+    if (SelectedZone !== "") {  // if the previously-selected-zone exists in the array (html collection), set that zone as selected
+        for (let item of theForm.zone_id.options) {
+            if (item.value === SelectedZone) {
+                theForm.elements["zone_id"].value = SelectedZone;
+                break;
+            }
+        }
+    }
 }
 
   function hideStateField(theForm) {
     theForm.state.disabled = true;
     theForm.state.className = 'hiddenField';
     theForm.state.setAttribute('className', 'hiddenField');
+    theForm.state.required = false;
+    theForm.zone_id.required = true;
     document.getElementById("stateLabel").className = 'hiddenField';
     document.getElementById("stateLabel").setAttribute('className', 'hiddenField');
 
@@ -54,6 +63,8 @@ function update_zone(theForm) {
     theForm.state.disabled = false;
     theForm.state.className = 'inputLabel visibleField';
     theForm.state.setAttribute('className', 'visibleField');
+    theForm.state.required = true;
+    theForm.zone_id.required = false;
     document.getElementById("stateLabel").className = 'inputLabel visibleField';
     document.getElementById("stateLabel").setAttribute('className', 'inputLabel visibleField');
     document.getElementById("stText").className = 'alert visibleField';

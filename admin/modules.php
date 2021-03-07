@@ -262,6 +262,7 @@ if (!empty($action)) {
                       <?php
                       if (isset($mInfo) && is_object($mInfo) && ($class == $mInfo->code)) {
                         echo zen_image(DIR_WS_IMAGES . 'icon_arrow_right.gif');
+                        $_GET['module'] = $_GET['module'] ?? $mInfo->code;
                       } else {
                         echo '<a href="' . zen_href_link(FILENAME_MODULES, 'set=' . $set . '&module=' . $class, 'SSL') . '">' . zen_image(DIR_WS_IMAGES . 'icon_info.gif', IMAGE_ICON_INFO) . '</a>';
                       }
@@ -316,7 +317,7 @@ if (!empty($action)) {
               foreach($mInfo->keys as $key => $value) {
                 $keys .= '<b>' . $value['title'] . '</b><br>' . $value['description'] . '<br>';
                 if ($value['set_function']) {
-                  eval('$keys .= ' . $value['set_function'] . "'" . $value['value'] . "', '" . $key . "');");
+                  eval('$keys .= ' . $value['set_function'] . '"' . zen_output_string($value['value'], array('"' => '&quot;', '`' => 'null;return;exit;')) . '", "' . $key . '");');
                 } else {
                   $keys .= zen_draw_input_field('configuration[' . $key . ']', htmlspecialchars($value['value'], ENT_COMPAT, CHARSET, TRUE), 'class="form-control"');
                 }

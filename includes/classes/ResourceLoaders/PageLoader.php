@@ -1,9 +1,9 @@
 <?php
 /**
  *
- * @copyright Copyright 2003-2020 Zen Cart Development Team
+ * @copyright Copyright 2003-2021 Zen Cart Development Team
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: Zcwilt 2019 Aug 23 New in v1.5.7 $
+ * @version $Id: Modified in v1.5.8 $
  */
 
 namespace Zencart\PageLoader;
@@ -67,22 +67,23 @@ class PageLoader
 
     function getTemplateDirectory($templateCode, $currentTemplate, $currentPage, $templateDir)
     {
+        if ($currentTemplate === 'template_default') $currentTemplate = DIR_WS_TEMPLATES . $currentTemplate . '/';
 
         $path = DIR_WS_TEMPLATES . 'template_default/' . $templateDir;
 
         if ($this->fileSystem->fileExistsInDirectory($currentTemplate . $currentPage, $templateCode)) {
-            $path = $currentTemplate . $currentPage . '/';
+            return $currentTemplate . $currentPage . '/';
         }
         if ($this->fileSystem->fileExistsInDirectory(
             DIR_WS_TEMPLATES . 'template_default/' . $currentPage, preg_replace('/\//', '', $templateCode))) {
-            $path = DIR_WS_TEMPLATES . 'template_default/' . $currentPage;
+            return DIR_WS_TEMPLATES . 'template_default/' . $currentPage;
         }
         if ($this->fileSystem->fileExistsInDirectory(
             $currentTemplate . $templateDir, preg_replace('/\//', '', $templateCode))) {
-            $path = $currentTemplate . $templateDir;
+            return $currentTemplate . $templateDir;
         }
         if ($tplPluginDir = $this->getTemplatePluginDir($templateCode, $templateDir)) {
-            $path = $tplPluginDir;
+            return $tplPluginDir;
         }
         return $path;
     }

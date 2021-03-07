@@ -1,9 +1,9 @@
 <?php
 /**
- * @copyright Copyright 2003-2020 Zen Cart Development Team
+ * @copyright Copyright 2003-2021 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: DrByte 2020 Jun 09 Modified in v1.5.7 $
+ * @version $Id: DrByte  Modified in v1.5.8 $
  */
 
 if (!defined('ADMIN_PASSWORD_MIN_LENGTH')) define('ADMIN_PASSWORD_MIN_LENGTH', 7);
@@ -15,19 +15,22 @@ if (!defined('ADMIN_PASSWORD_MIN_LENGTH')) define('ADMIN_PASSWORD_MIN_LENGTH', 7
  * @param array $params
  * @return bool
  */
-function check_page($page, $params)
+function check_page($page, $params = [])
 {
     global $db;
     if (!isset($_SESSION['admin_id'])) return false;
+    
+    $page_params = '';
     // Most entries (normal case) have their own pages. However, everything on the Configuration
     // and Modules menus are handled by the single pages configuration.php and modules.php. So for
     // these pages we check their respective get params too.
-    if ($page == 'modules') {
-        $page_params = 'set=' . $params['set'];
-    } elseif ($page == 'configuration') {
-        $page_params = 'gID=' . $params['gID'];
-    } else {
-        $page_params = '';
+    if (!empty($params)) {
+        if ($page == 'modules') {
+            $page_params = 'set=' . $params['set'];
+        }
+        if ($page == 'configuration') {
+            $page_params = 'gID=' . $params['gID'];
+        }
     }
 
     $sql = "SELECT ap.main_page, ap.page_params
