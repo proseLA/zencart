@@ -322,6 +322,20 @@ function zen_product_in_parent_category($product_id, $cat_id, $parent_cat_id)
  */
 function zen_draw_pulldown_products($field_name, $parameters = '', $exclude = [], $show_id = false, $set_selected = 0, $show_model = false, $show_current_category = false)
 {
+    global $prev_next_order, $current_category_id;
+    
+    $sort_array = array_filter(explode(',', str_ireplace('order by ', '', trim($prev_next_order))));
+
+    $pulldown = new productPulldown();
+
+    if ($show_current_category) {
+        $pulldown->setCategory($current_category_id);
+    }
+
+    $pulldown->setSort($sort_array)->exclude($exclude)->showModel($show_model)->setDefault((int)$set_selected)->showId($show_id)->showPrice(true);
+    return $pulldown->generatePulldownHtml($field_name, $parameters, false);
+
+    /*
     global $currencies, $db, $current_category_id, $prev_next_order;
 
     if (!is_array($exclude)) {
@@ -374,6 +388,7 @@ function zen_draw_pulldown_products($field_name, $parameters = '', $exclude = []
     $select_string .= '</select>';
 
     return $select_string;
+    */
 }
 
 

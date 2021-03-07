@@ -10,6 +10,7 @@
 			parent::__construct();
 
 			$this->show_model = false;
+			$this->show_price = false;
 			$this->set_selected = 0;
 			$this->categories_join = '';
 
@@ -23,12 +24,21 @@
 			];
 		}
 
-		public function setSort($fieldname)
+		public function setSort($fieldnameArray)
 		{
-			if (in_array($fieldname, $this->allowed_sort_array)) {
-				$key = array_search($fieldname, $this->allowed_sort_array);
-				$this->sort = ' ORDER BY ' . $this->db_table_prefix_array[$key] . $fieldname;
-			}
+		    if (empty($fieldnameArray)) {
+		        return $this;
+            }
+
+		    $first = true;
+		    $this->sort = '';
+		    foreach ($fieldnameArray as $fieldname) {
+                if (in_array($fieldname, $this->allowed_sort_array)) {
+                    $key = array_search($fieldname, $this->allowed_sort_array);
+                    $this->sort = ($first ? ' ORDER BY ' : ', ') . $this->db_table_prefix_array[$key] . $fieldname;
+                    $first = false;
+                }
+            }
 			return $this;
 		}
 
@@ -42,6 +52,12 @@
 		public function showModel()
 		{
 			$this->show_model = true;
+			return $this;
+		}
+
+		public function showPrice()
+		{
+			$this->show_price = true;
 			return $this;
 		}
 
@@ -70,22 +86,28 @@
 			$this->runSQL();
 
 			$parm_2 = '';
+			$parm_3 = '';
 
 			if ($this->show_model) {
-				$parm_2 = '%2$s ';
+				$parm_2 = '%2$s';
 			}
 
-			$this->output_string = '%1$s ' . $parm_2 . '(%3$s)'; // format string with name first
+			if ($this->show_price) {
+			   $parm_3 = ' (%3$s)';
+            }
+
+			$this->output_string = '%1$s ' . $parm_2 . $parm_3; // format string with name first
 
 			if (strpos($this->sort, 'model')) {
-				$this->output_string = (!empty($parm_2) ? $parm_2 . '-' : '') . ' %1$s (%3$s)'; // format string with model first
+				$this->output_string = (!empty($parm_2) ? $parm_2 . '-' : '') . ' %1$s' . $parm_3; // format string with model first
 			}
+
 
 			foreach ($this->results as $result) {
 				if (in_array($result['products_id'], $this->exclude)) {
 					continue;
 				}
-				$display_price = zen_get_products_base_price($result['products_id']);
+				$display_price = $this->showPrice() ? zen_get_products_base_price($result['products_id']) : '';
 				$name = zen_get_products_name($result['products_id']);
 				$this->values[] = [
 					'id' => $result['products_id'],
